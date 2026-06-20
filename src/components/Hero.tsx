@@ -15,13 +15,13 @@ const item: Variants = {
 
 export default function Hero() {
   return (
-    <section className="relative min-h-[90vh] flex items-center bg-gradient-to-br from-[#191e0d] via-[#2a2a1a] to-primary overflow-hidden">
+    <section className="relative min-h-[90vh] flex items-center bg-gradient-to-br from-[#1a1200] via-[#2a1f00] to-primary overflow-hidden">
       <video autoPlay muted loop playsInline poster="/therapy-session.jpg" className="absolute inset-0 w-full h-full object-cover opacity-50">
         <source src="/therapy-session.mp4" type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-gradient-to-br from-[#191e0d] via-[#2a2a1a]/80 to-primary/60" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1a1200] via-[#2a1f00]/80 to-primary/60" />
       <div className="blob w-[500px] h-[500px] bg-primary-light top-[-100px] right-[-100px]" />
-      <div className="blob w-[400px] h-[400px] bg-[#8b5120] bottom-[-150px] left-[-100px]" />
+      <div className="blob w-[400px] h-[400px] bg-[#F5D980] bottom-[-150px] left-[-100px]" />
 
       <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle at 25px 25px, white 1px, transparent 0)", backgroundSize: "50px 50px" }} />
 

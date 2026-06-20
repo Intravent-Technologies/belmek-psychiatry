@@ -143,7 +143,7 @@ export default async function BlogPost({
 
   return (
     <>
-      <section className="relative min-h-[30vh] flex items-center bg-gradient-to-br from-[#191e0d] via-[#2a2a1a] to-primary overflow-hidden">
+      <section className="relative min-h-[30vh] flex items-center bg-gradient-to-br from-[#1a1200] via-[#2a1f00] to-primary overflow-hidden">
         <div className="blob w-[300px] h-[300px] bg-primary-light top-[-80px] right-[-50px]" />
         <div className="relative container-max px-4 sm:px-6 lg:px-8">
           <Link href="/blog" className="inline-flex items-center gap-1 text-sm text-gray-300 hover:text-white mb-6 transition-colors">

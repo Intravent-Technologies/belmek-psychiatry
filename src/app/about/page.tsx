@@ -30,7 +30,7 @@ const values = [
 export default function About() {
   return (
     <>
-      <section className="relative min-h-[50vh] flex items-center bg-gradient-to-br from-[#191e0d] via-[#2a2a1a] to-primary overflow-hidden">
+      <section className="relative min-h-[50vh] flex items-center bg-gradient-to-br from-[#1a1200] via-[#2a1f00] to-primary overflow-hidden">
         <div className="blob w-[400px] h-[400px] bg-primary-light top-[-100px] right-[-50px]" />
         <div className="relative container-max px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white">About Us</h1>
