@@ -21,7 +21,7 @@ export default function Hero() {
       </video>
       <div className="absolute inset-0 bg-gradient-to-br from-[#1a1200] via-[#2a1f00]/80 to-primary/60" />
       <div className="blob w-[500px] h-[500px] bg-primary-light top-[-100px] right-[-100px]" />
-      <div className="blob w-[400px] h-[400px] bg-[#F5D980] bottom-[-150px] left-[-100px]" />
+      <div className="blob w-[400px] h-[400px] bg-[#c8a36e] bottom-[-150px] left-[-100px]" />
 
       <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle at 25px 25px, white 1px, transparent 0)", backgroundSize: "50px 50px" }} />
 

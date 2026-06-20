@@ -9,11 +9,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-primary: #D4AF37;
-  --color-primary-dark: #B8860B;
-  --color-primary-light: #F5D980;
-  --color-secondary: #B8860B;
-  --color-accent: #F5D980;
+  --color-primary: #ab7b3b;
+  --color-primary-dark: #8c6430;
+  --color-primary-light: #c8a36e;
+  --color-secondary: #8c6430;
+  --color-accent: #c8a36e;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-cinzel);
@@ -61,7 +61,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #D4AF37, #F5D980);
+  background: linear-gradient(135deg, #ab7b3b, #c8a36e);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
