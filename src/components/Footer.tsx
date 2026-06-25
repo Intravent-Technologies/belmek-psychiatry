@@ -68,8 +68,8 @@ export default function Footer() {
                  </a>
               </li>
               <li>
-                <a href="mailto:info@belmekpsychiatry.com" className="hover:text-white transition-colors">
-                  info@belmekpsychiatry.com
+                <a href="mailto:info@belmekwellness.com" className="hover:text-white transition-colors">
+                  info@belmekwellness.com
                 </a>
               </li>
               <li className="leading-relaxed">

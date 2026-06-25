@@ -10,7 +10,7 @@ const faqs = [
   },
   {
     q: "Do you offer in-person and telehealth visits?",
-    a: "We offer online video appointments only through a secure, HIPAA-compliant platform. Appointments are available on Fridays from 9:00 AM to 3:30 PM EST.",
+    a: "We offer online video appointments only through a secure, HIPAA-compliant platform. Appointments are available Monday - Saturday | 9am - 5pm.",
   },
   {
     q: "What insurance do you accept?",

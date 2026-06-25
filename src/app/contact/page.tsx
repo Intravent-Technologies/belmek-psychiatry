@@ -12,8 +12,10 @@ export default function Contact() {
   return (
     <>
       <section className="relative min-h-[40vh] flex items-center bg-gradient-to-br from-[#1a1200] via-[#2a1f00] to-primary overflow-hidden">
+        <img src="/therapy-session.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1200] via-[#2a1f00]/80 to-primary/60" />
         <div className="blob w-[400px] h-[400px] bg-primary-light top-[-100px] right-[-50px]" />
-        <div className="relative container-max px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative container-max px-4 sm:px-6 lg:px-8 py-24 md:py-32 lg:py-40 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white">Contact Us</h1>
           <p className="mt-4 text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
             Take the first step toward better mental health. Schedule your appointment today.
@@ -40,7 +42,7 @@ export default function Contact() {
                 </svg>
               </div>
               <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-              <a href="mailto:info@belmekpsychiatry.com" className="text-primary hover:underline">info@belmekpsychiatry.com</a>
+              <a href="mailto:info@belmekwellness.com" className="text-primary hover:underline">info@belmekwellness.com</a>
             </div>
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -88,7 +90,7 @@ export default function Contact() {
                     <svg className="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-sm text-gray-700">Fridays 9:00 AM – 3:30 PM EST</span>
+                    <span className="text-sm text-gray-700">Monday - Saturday | 9am - 5pm</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <svg className="w-5 h-5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

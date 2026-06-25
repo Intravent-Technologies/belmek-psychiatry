@@ -61,10 +61,42 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #ab7b3b, #c8a36e);
+  background: linear-gradient(135deg, #d4a847 0%, #ab7b3b 50%, #c8a36e 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #d4a847 0%, #ab7b3b 50%, #7a5a2a 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(171, 123, 59, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+  background: linear-gradient(135deg, #e0b85c 0%, #b8862d 50%, #8c6430 100%);
+  box-shadow: 0 8px 24px rgba(171, 123, 59, 0.4);
+  transform: translateY(-2px);
+}
+
+.gold-primary {
+  background: linear-gradient(145deg, #f2d680 0%, #d4a847 25%, #ab7b3b 50%, #7a5a2a 75%, #6d4f1f 100%);
+  background-size: 200% 200%;
+  animation: goldShimmer 4s ease-in-out infinite;
+  box-shadow: 0 4px 16px rgba(171, 123, 59, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.gold-primary:hover {
+  background: linear-gradient(145deg, #fce6a0 0%, #e0b85c 25%, #b8862d 50%, #8c6430 75%, #7a5a2a 100%);
+  background-size: 200% 200%;
+  animation: goldShimmer 2s ease-in-out infinite;
+  box-shadow: 0 8px 24px rgba(171, 123, 59, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+@keyframes goldShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .blob {

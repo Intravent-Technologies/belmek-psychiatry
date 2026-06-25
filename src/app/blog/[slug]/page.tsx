@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import SectionHeading from "@/components/SectionHeading";
 import Button from "@/components/Button";
 
 const posts = [
@@ -144,8 +145,10 @@ export default async function BlogPost({
   return (
     <>
       <section className="relative min-h-[30vh] flex items-center bg-gradient-to-br from-[#1a1200] via-[#2a1f00] to-primary overflow-hidden">
+        <img src="/therapy-session.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1200] via-[#2a1f00]/80 to-primary/60" />
         <div className="blob w-[300px] h-[300px] bg-primary-light top-[-80px] right-[-50px]" />
-        <div className="relative container-max px-4 sm:px-6 lg:px-8">
+        <div className="relative container-max px-4 sm:px-6 lg:px-8 py-20 md:py-28">
           <Link href="/blog" className="inline-flex items-center gap-1 text-sm text-gray-300 hover:text-white mb-6 transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -193,12 +196,23 @@ export default async function BlogPost({
             })}
           </div>
 
-          <div className="mt-12 pt-8 border-t border-gray-100 text-center">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Ready to Start Your Journey?</h3>
-            <Button href="/contact">Schedule an Appointment</Button>
-          </div>
         </div>
       </article>
+
+      <section className="relative py-20 md:py-28 bg-[#faf9f6] overflow-hidden">
+        <img src="/therapy-session.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-25 blur-sm" />
+        <div className="blob w-[300px] h-[300px] bg-primary-light top-[-50px] right-[-50px]" />
+        <div className="relative container-max px-4 sm:px-6 lg:px-8 text-center">
+          <SectionHeading
+            title="Ready to Start Your Journey?"
+            subtitle="Take the first step toward better mental health."
+          />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button href="/contact">Schedule an Appointment</Button>
+            <Button href="/services" variant="outline">View Our Services</Button>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

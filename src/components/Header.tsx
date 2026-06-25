@@ -56,7 +56,7 @@ export default function Header() {
           </a>
           <Link
             href="/contact"
-            className="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
+            className="gold-primary text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-lg shadow-[#ab7b3b]/30"
           >
             Book Appointment
           </Link>
@@ -102,7 +102,7 @@ export default function Header() {
               <Link
                 href="/contact"
                 onClick={() => setMobileOpen(false)}
-                className="block text-center bg-primary text-white px-5 py-3 rounded-xl text-sm font-semibold hover:bg-primary-dark transition-colors"
+                className="block text-center gold-primary text-white px-5 py-3 rounded-xl text-sm font-semibold"
               >
                 Book Appointment
               </Link>

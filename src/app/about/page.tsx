@@ -31,8 +31,10 @@ export default function About() {
   return (
     <>
       <section className="relative min-h-[50vh] flex items-center bg-gradient-to-br from-[#1a1200] via-[#2a1f00] to-primary overflow-hidden">
+        <img src="/therapy-session.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1200] via-[#2a1f00]/80 to-primary/60" />
         <div className="blob w-[400px] h-[400px] bg-primary-light top-[-100px] right-[-50px]" />
-        <div className="relative container-max px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative container-max px-4 sm:px-6 lg:px-8 py-24 md:py-32 lg:py-40 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white">About Us</h1>
           <p className="mt-4 text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
             Compassionate, high-quality mental health care in a safe, confidential, and supportive environment.
@@ -179,6 +181,7 @@ export default function About() {
       </section>
 
       <section className="relative py-20 md:py-28 bg-[#faf9f6] overflow-hidden">
+        <img src="/therapy-session.jpg" alt="" className="absolute inset-0 w-full h-full object-cover opacity-25 blur-sm" />
         <div className="blob w-[300px] h-[300px] bg-primary-light top-[-50px] right-[-50px]" />
         <div className="relative container-max px-4 sm:px-6 lg:px-8 text-center">
           <SectionHeading
