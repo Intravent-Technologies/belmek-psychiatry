@@ -10,7 +10,7 @@ interface Review {
 const reviews: Review[] = [
   {
     name: "Sarah M.",
-    text: "Dr Abimbola and the team have been incredible. They truly listen and care about their patients. I've never felt more supported in my mental health journey.",
+    text: "Dr. Ossai and the team have been incredible. They truly listen and care about their patients. I've never felt more supported in my mental health journey.",
   },
   {
     name: "James R.",
