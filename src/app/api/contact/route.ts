@@ -11,6 +11,18 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
+function parseBase64Image(dataUri: string): { buffer: Buffer; filename: string; mimeType: string } | null {
+  const match = dataUri.match(/^data:(image\/\w+);base64,(.+)$/);
+  if (!match) return null;
+  const mimeType = match[1];
+  const ext = mimeType.split("/")[1] === "jpeg" ? "jpg" : mimeType.split("/")[1];
+  return {
+    buffer: Buffer.from(match[2], "base64"),
+    filename: `insurance-card.${ext}`,
+    mimeType,
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -40,17 +52,38 @@ export async function POST(request: Request) {
       },
     });
 
+    const attachments: nodemailer.SendAttachment[] = [];
     const hasFront = typeof insuranceCardFront === "string" && insuranceCardFront.startsWith("data:image");
     const hasBack = typeof insuranceCardBack === "string" && insuranceCardBack.startsWith("data:image");
 
     let insuranceCardSection = "";
     if (hasFront || hasBack) {
+      const frontParts = hasFront ? parseBase64Image(insuranceCardFront!) : null;
+      const backParts = hasBack ? parseBase64Image(insuranceCardBack!) : null;
+
+      if (frontParts) {
+        attachments.push({
+          filename: `insurance-front.${frontParts.filename.split(".").pop()}`,
+          content: frontParts.buffer,
+          contentType: frontParts.mimeType,
+          cid: "insurance-front",
+        });
+      }
+      if (backParts) {
+        attachments.push({
+          filename: `insurance-back.${backParts.filename.split(".").pop()}`,
+          content: backParts.buffer,
+          contentType: backParts.mimeType,
+          cid: "insurance-back",
+        });
+      }
+
       insuranceCardSection = `
         <tr>
           <td style="font-weight:bold;background:#f5f5f5;">Insurance Card</td>
           <td>
-            ${hasFront ? `<p style="margin:0 0 8px 0;"><strong>Front:</strong><br/><img src="${insuranceCardFront}" style="max-width:100%;max-height:300px;border:1px solid #ddd;border-radius:8px;" /></p>` : ""}
-            ${hasBack ? `<p style="margin:0;"><strong>Back:</strong><br/><img src="${insuranceCardBack}" style="max-width:100%;max-height:300px;border:1px solid #ddd;border-radius:8px;" /></p>` : ""}
+            ${hasFront ? `<p style="margin:0 0 8px 0;"><strong>Front:</strong><br/><img src="cid:insurance-front" style="max-width:100%;max-height:300px;border:1px solid #ddd;border-radius:8px;" /></p>` : ""}
+            ${hasBack ? `<p style="margin:0;"><strong>Back:</strong><br/><img src="cid:insurance-back" style="max-width:100%;max-height:300px;border:1px solid #ddd;border-radius:8px;" /></p>` : ""}
           </td>
         </tr>
       `;
@@ -76,6 +109,7 @@ export async function POST(request: Request) {
       to: process.env.SMTP_TO,
       subject: `New Appointment Request - ${escapeHtml(firstName)} ${escapeHtml(lastName)}`,
       html,
+      attachments,
     });
 
     return NextResponse.json({ success: true });
