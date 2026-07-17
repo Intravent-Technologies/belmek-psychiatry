@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const attachments: nodemailer.SendAttachment[] = [];
+    const attachments: { filename: string; content: Buffer; contentType: string; cid: string }[] = [];
     const hasFront = typeof insuranceCardFront === "string" && insuranceCardFront.startsWith("data:image");
     const hasBack = typeof insuranceCardBack === "string" && insuranceCardBack.startsWith("data:image");
 

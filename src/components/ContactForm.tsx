@@ -10,17 +10,53 @@ interface UploadZoneProps {
   onRemove: () => void;
 }
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const COMPRESS_TARGET_WIDTH = 1200;
+const COMPRESS_QUALITY = 0.8;
+
+function compressImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > COMPRESS_TARGET_WIDTH) {
+        height = Math.round((height * COMPRESS_TARGET_WIDTH) / width);
+        width = COMPRESS_TARGET_WIDTH;
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", COMPRESS_QUALITY));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Failed to load image")); };
+    img.src = url;
+  });
+}
+
 function UploadZone({ label, sublabel, base64, onUpload, onRemove }: UploadZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
-  const processFile = useCallback((file: File) => {
+  const processFile = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") onUpload(reader.result);
-    };
-    reader.readAsDataURL(file);
+    if (file.size > MAX_FILE_SIZE) {
+      alert("File too large. Maximum size is 10MB.");
+      return;
+    }
+    setProcessing(true);
+    try {
+      const compressed = await compressImage(file);
+      onUpload(compressed);
+    } catch {
+      alert("Failed to process image. Please try another file.");
+    } finally {
+      setProcessing(false);
+    }
   }, [onUpload]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -58,17 +94,21 @@ function UploadZone({ label, sublabel, base64, onUpload, onRemove }: UploadZoneP
         dragging ? "border-primary bg-primary/5" : "border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-white"
       }`}
     >
-      <input ref={inputRef} type="file" accept="image/*" onChange={handleChange} className="hidden" />
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleChange} className="hidden" />
       <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mb-3">
-        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
+        {processing ? (
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        )}
       </div>
-      <p className="text-sm font-semibold text-gray-700">{label}</p>
-      <p className="text-xs text-gray-400 mt-1">{sublabel}</p>
+      <p className="text-sm font-semibold text-gray-700">{processing ? "Processing..." : label}</p>
+      <p className="text-xs text-gray-400 mt-1">{processing ? "Compressing image..." : sublabel}</p>
     </div>
   );
 }
