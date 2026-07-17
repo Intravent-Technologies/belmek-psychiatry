@@ -1,26 +1,27 @@
-import { neon } from "@neondatabase/serverless";
+import { createClient } from "@supabase/supabase-js";
 
-const sql = neon(process.env.DATABASE_URL!);
-
-export async function initDb() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS reviews (
-      id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      text TEXT NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-}
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function getReviews() {
-  await initDb();
-  const result = await sql`SELECT name, text FROM reviews ORDER BY created_at DESC`;
-  return result;
+  const { data, error } = await supabase
+    .from("reviews")
+    .select("name, text")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data || [];
 }
 
 export async function addReview(name: string, text: string) {
-  await initDb();
-  const result = await sql`INSERT INTO reviews (name, text) VALUES (${name}, ${text}) RETURNING name, text`;
-  return result[0];
+  const { data, error } = await supabase
+    .from("reviews")
+    .insert({ name, text })
+    .select("name, text")
+    .single();
+
+  if (error) throw error;
+  return data;
 }

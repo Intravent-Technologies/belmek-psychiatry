@@ -1,4 +1,9 @@
-import { getReviews, addReview } from "./lib/db.js";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 const defaultReviews = [
   {
@@ -16,12 +21,17 @@ const defaultReviews = [
 ];
 
 async function seed() {
-  const existing = await getReviews();
-  if (existing.length === 0) {
-    for (const review of defaultReviews) {
-      await addReview(review.name, review.text);
+  const { count } = await supabase
+    .from("reviews")
+    .select("*", { count: "exact", head: true });
+
+  if (count === 0) {
+    const { error } = await supabase.from("reviews").insert(defaultReviews);
+    if (error) {
+      console.error("Seed failed:", error);
+    } else {
+      console.log("Seeded default reviews");
     }
-    console.log("Seeded default reviews");
   } else {
     console.log("Reviews already exist, skipping seed");
   }
