@@ -7,52 +7,56 @@ interface Review {
   text: string;
 }
 
-const defaultReviews: Review[] = [
-  {
-    name: "Sarah M.",
-    text: "Dr. Ossai and the team have been incredible. They truly listen and care about their patients. I've never felt more supported in my mental health journey.",
-  },
-  {
-    name: "James R.",
-    text: "After years of struggling with anxiety, I finally found a practice that takes the time to understand me. The telehealth option makes it so convenient.",
-  },
-  {
-    name: "Maria L.",
-    text: "The staff is professional, compassionate, and responsive. I was able to get an appointment within a week. Highly recommend Belmek Psychiatry.",
-  },
-];
-
 export default function ReviewSection() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("reviews");
-    if (stored) {
-      setReviews(JSON.parse(stored));
-    } else {
-      setReviews(defaultReviews);
-    }
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (loaded) {
-      localStorage.setItem("reviews", JSON.stringify(reviews));
-    }
-  }, [reviews, loaded]);
   const [reviewName, setReviewName] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleReviewSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  async function fetchReviews() {
+    try {
+      const res = await fetch("/api/reviews");
+      if (res.ok) {
+        const data = await res.json();
+        setReviews(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+    } finally {
+      setLoaded(true);
+    }
+  }
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (reviewName.trim() && reviewText.trim()) {
-      setReviews([...reviews, { name: reviewName.trim(), text: reviewText.trim() }]);
-      setReviewSubmitted(true);
-      setReviewName("");
-      setReviewText("");
-      setTimeout(() => setReviewSubmitted(false), 3000);
+    if (!reviewName.trim() || !reviewText.trim() || submitting) return;
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: reviewName.trim(), text: reviewText.trim() }),
+      });
+
+      if (res.ok) {
+        const newReview = await res.json();
+        setReviews([newReview, ...reviews]);
+        setReviewSubmitted(true);
+        setReviewName("");
+        setReviewText("");
+        setTimeout(() => setReviewSubmitted(false), 3000);
+      }
+    } catch (error) {
+      console.error("Failed to submit review:", error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -115,9 +119,10 @@ export default function ReviewSection() {
                   <span className="text-xs text-gray-400">{reviewText.length}/1000</span>
                   <button
                     type="submit"
-                    className="px-6 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
+                    disabled={submitting}
+                    className="px-6 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Submit Review
+                    {submitting ? "Submitting..." : "Submit Review"}
                   </button>
                 </div>
               </form>
