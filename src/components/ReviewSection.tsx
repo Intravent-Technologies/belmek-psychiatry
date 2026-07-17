@@ -7,7 +7,7 @@ interface Review {
   text: string;
 }
 
-const reviews: Review[] = [
+const initialReviews: Review[] = [
   {
     name: "Sarah M.",
     text: "Dr. Ossai and the team have been incredible. They truly listen and care about their patients. I've never felt more supported in my mental health journey.",
@@ -23,15 +23,20 @@ const reviews: Review[] = [
 ];
 
 export default function ReviewSection() {
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [reviewName, setReviewName] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   const handleReviewSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setReviewSubmitted(true);
-    setReviewName("");
-    setReviewText("");
+    if (reviewName.trim() && reviewText.trim()) {
+      setReviews([...reviews, { name: reviewName.trim(), text: reviewText.trim() }]);
+      setReviewSubmitted(true);
+      setReviewName("");
+      setReviewText("");
+      setTimeout(() => setReviewSubmitted(false), 3000);
+    }
   };
 
   return (
