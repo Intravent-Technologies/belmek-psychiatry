@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Review {
   name: string;
   text: string;
 }
 
-const initialReviews: Review[] = [
+const defaultReviews: Review[] = [
   {
     name: "Sarah M.",
     text: "Dr. Ossai and the team have been incredible. They truly listen and care about their patients. I've never felt more supported in my mental health journey.",
@@ -23,7 +23,24 @@ const initialReviews: Review[] = [
 ];
 
 export default function ReviewSection() {
-  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("reviews");
+    if (stored) {
+      setReviews(JSON.parse(stored));
+    } else {
+      setReviews(defaultReviews);
+    }
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (loaded) {
+      localStorage.setItem("reviews", JSON.stringify(reviews));
+    }
+  }, [reviews, loaded]);
   const [reviewName, setReviewName] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
@@ -50,7 +67,7 @@ export default function ReviewSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
-          {reviews.map((review, i) => (
+          {loaded && reviews.map((review, i) => (
             <div key={i} className="glass-card rounded-2xl p-8 relative">
               <div className="absolute top-6 right-6 text-5xl font-serif text-primary/10 leading-none">&ldquo;</div>
               <div className="flex items-center gap-0.5 mb-5">
