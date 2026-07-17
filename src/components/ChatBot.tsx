@@ -1,17 +1,64 @@
 "use client";
 
-import { useState, useRef, useEffect, FormEvent } from "react";
+import { useState, useRef, useEffect, FormEvent, useCallback } from "react";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
+  typed?: boolean;
 }
 
 const GREETING: Message = {
   role: "assistant",
   content:
     "Hello! I'm the Belmek Psychiatry assistant. How can I help you today?",
+  typed: true,
 };
+
+const CHAR_DELAY = 15;
+const LINE_PAUSE = 120;
+
+function TypewriterText({ text, onDone }: { text: string; onDone: () => void }) {
+  const [displayed, setDisplayed] = useState("");
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    indexRef.current = 0;
+    setDisplayed("");
+    let active = true;
+
+    const tick = () => {
+      if (!active) return;
+      if (indexRef.current >= text.length) {
+        onDone();
+        return;
+      }
+      const char = text[indexRef.current];
+      indexRef.current++;
+      setDisplayed(text.slice(0, indexRef.current));
+
+      if (char === "\n") {
+        setTimeout(tick, LINE_PAUSE);
+      } else if (char === " " || char === "•") {
+        setTimeout(tick, CHAR_DELAY * 3);
+      } else {
+        setTimeout(tick, CHAR_DELAY);
+      }
+    };
+
+    const timer = setTimeout(tick, 200);
+    return () => { active = false; clearTimeout(timer); };
+  }, [text, onDone]);
+
+  return (
+    <span>
+      {displayed}
+      {displayed.length < text.length && (
+        <span className="inline-block w-[2px] h-[1em] bg-gray-400 ml-[1px] align-text-bottom animate-pulse" />
+      )}
+    </span>
+  );
+}
 
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,12 +82,18 @@ export default function ChatBot() {
     }
   }, [isOpen]);
 
+  const markTyped = useCallback((index: number) => {
+    setMessages((prev) =>
+      prev.map((m, i) => (i === index ? { ...m, typed: true } : m))
+    );
+  }, []);
+
   const sendMessage = async (e: FormEvent) => {
     e.preventDefault();
     const trimmed = input.trim();
     if (!trimmed || isLoading) return;
 
-    const userMessage: Message = { role: "user", content: trimmed };
+    const userMessage: Message = { role: "user", content: trimmed, typed: true };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
@@ -57,11 +110,12 @@ export default function ChatBot() {
 
       const data = await res.json();
       const reply = data.reply as string;
-      const thinkTime = Math.min(800 + reply.length * 8, 3000);
+      const thinkTime = Math.min(600 + reply.length * 5, 2500);
       await new Promise((r) => setTimeout(r, thinkTime));
+
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: reply },
+        { role: "assistant", content: reply, typed: false },
       ]);
     } catch {
       setMessages((prev) => [
@@ -70,6 +124,7 @@ export default function ChatBot() {
           role: "assistant",
           content:
             "Sorry, something went wrong. Please try again or contact us at (443) 339-8634.",
+          typed: false,
         },
       ]);
     } finally {
@@ -90,32 +145,12 @@ export default function ChatBot() {
         aria-label={isOpen ? "Close chat" : "Open chat"}
       >
         {isOpen ? (
-          <svg
-            className="w-5 h-5 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
+          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-            />
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         )}
       </button>
@@ -127,46 +162,18 @@ export default function ChatBot() {
           <div className="gold-primary px-5 py-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <svg
-                  className="w-4 h-4 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                  />
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-white font-semibold text-sm">
-                  Belmek Assistant
-                </h3>
-                <p className="text-white/70 text-xs">
-                  Ask about our services
-                </p>
+                <h3 className="text-white font-semibold text-sm">Belmek Assistant</h3>
+                <p className="text-white/70 text-xs">Ask about our services</p>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white/70 hover:text-white transition-colors p-1"
-              aria-label="Close chat"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+            <button onClick={() => setIsOpen(false)} className="text-white/70 hover:text-white transition-colors p-1" aria-label="Close chat">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -174,18 +181,17 @@ export default function ChatBot() {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[80%] px-4 py-2.5 text-sm leading-relaxed rounded-2xl ${
-                    msg.role === "user"
-                      ? "bg-primary text-white rounded-br-md"
-                      : "bg-gray-100 text-gray-800 rounded-bl-md"
-                  }`}
-                >
-                  {msg.content}
+              <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[80%] px-4 py-2.5 text-sm leading-relaxed rounded-2xl ${
+                  msg.role === "user"
+                    ? "bg-primary text-white rounded-br-md"
+                    : "bg-gray-100 text-gray-800 rounded-bl-md"
+                }`}>
+                  {msg.role === "assistant" && !msg.typed ? (
+                    <TypewriterText text={msg.content} onDone={() => markTyped(i)} />
+                  ) : (
+                    msg.content
+                  )}
                 </div>
               </div>
             ))}
@@ -206,10 +212,7 @@ export default function ChatBot() {
           </div>
 
           {/* Input */}
-          <form
-            onSubmit={sendMessage}
-            className="border-t border-gray-100 p-3 flex items-center gap-2 shrink-0"
-          >
+          <form onSubmit={sendMessage} className="border-t border-gray-100 p-3 flex items-center gap-2 shrink-0">
             <input
               ref={inputRef}
               type="text"
@@ -225,18 +228,8 @@ export default function ChatBot() {
               className="w-10 h-10 rounded-xl gold-primary text-white flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105"
               aria-label="Send message"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
             </button>
           </form>
