@@ -13,8 +13,34 @@ export default function ContactForm() {
     insurance: "", emergencyContact: "", emergencyPhone: "", agreed: false,
   });
 
+  const [stepErrors, setStepErrors] = useState<string[]>([]);
+
   const update = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const validateStep = (currentStep: number): string[] => {
+    const errors: string[] = [];
+    if (currentStep === 1) {
+      if (!formData.firstName.trim()) errors.push("First Name is required");
+      if (!formData.lastName.trim()) errors.push("Last Name is required");
+      if (!formData.dob) errors.push("Date of Birth is required");
+      if (!formData.preference) errors.push("Please select an Appointment Preference");
+      if (!formData.email.trim()) errors.push("Email is required");
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.push("Please enter a valid email address");
+      if (!formData.agreed) errors.push("You must agree to the Privacy Policy");
+    }
+    return errors;
+  };
+
+  const handleNext = () => {
+    const errors = validateStep(step);
+    if (errors.length > 0) {
+      setStepErrors(errors);
+      return;
+    }
+    setStepErrors([]);
+    setStep(step + 1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -191,19 +217,23 @@ export default function ContactForm() {
           </div>
         )}
 
-        {error && (
+        {(error || stepErrors.length > 0) && (
           <div className="mt-6 p-4 rounded-xl bg-red-50 border border-red-100 text-sm text-red-700">
-            {error}
+            {stepErrors.length > 0 ? (
+              <ul className="list-disc list-inside space-y-1">
+                {stepErrors.map((err) => <li key={err}>{err}</li>)}
+              </ul>
+            ) : error}
           </div>
         )}
         <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
           {step > 1 ? (
-            <button type="button" onClick={() => setStep(step - 1)} className="px-6 py-3 rounded-xl border border-gray-200 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-all">
+            <button type="button" onClick={() => { setStepErrors([]); setStep(step - 1); }} className="px-6 py-3 rounded-xl border border-gray-200 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-all">
               Back
             </button>
           ) : <div />}
           {step < 3 ? (
-            <button type="button" onClick={() => setStep(step + 1)} className="px-8 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-all shadow-lg shadow-primary/20">
+            <button type="button" onClick={handleNext} className="px-8 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-all shadow-lg shadow-primary/20">
               Continue
             </button>
           ) : (
