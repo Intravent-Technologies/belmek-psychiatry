@@ -11,7 +11,7 @@ interface Message {
 const GREETING: Message = {
   role: "assistant",
   content:
-    "Hello! I'm the Belmek Psychiatry assistant. How can I help you today?",
+    "Hey there! Welcome to Belmek Psychiatry. I'm here to help with any questions you might have — about our services, insurance, or just mental health in general. So tell me — what's your name?",
   typed: true,
 };
 
@@ -104,7 +104,10 @@ export default function ChatBot() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: trimmed,
-          history: messages.map((m) => ({ role: m.role, content: m.content })),
+          history: [
+            ...messages.map((m) => ({ role: m.role, content: m.content })),
+            { role: "user", content: trimmed },
+          ],
         }),
       });
 
