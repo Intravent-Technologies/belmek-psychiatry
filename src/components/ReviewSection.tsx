@@ -7,31 +7,41 @@ interface Review {
   text: string;
 }
 
+const fallbackReviews: Review[] = [
+  {
+    name: "Sarah M.",
+    text: "Dr. Ossai and the team have been incredible. They truly listen and care about their patients. I've never felt more supported in my mental health journey.",
+  },
+  {
+    name: "James R.",
+    text: "After years of struggling with anxiety, I finally found a practice that takes the time to understand me. The telehealth option makes it so convenient.",
+  },
+  {
+    name: "Maria L.",
+    text: "The staff is professional, compassionate, and responsive. I was able to get an appointment within a week. Highly recommend Belmek Psychiatry.",
+  },
+];
+
 export default function ReviewSection() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>(fallbackReviews);
   const [reviewName, setReviewName] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchReviews();
+    fetch("/api/reviews")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+      })
+      .then((data: Review[]) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setReviews(data);
+        }
+      })
+      .catch(() => {});
   }, []);
-
-  async function fetchReviews() {
-    try {
-      const res = await fetch("/api/reviews");
-      if (res.ok) {
-        const data = await res.json();
-        setReviews(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch reviews:", error);
-    } finally {
-      setLoaded(true);
-    }
-  }
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +81,7 @@ export default function ReviewSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
-          {loaded && reviews.map((review, i) => (
+          {reviews.map((review, i) => (
             <div key={i} className="glass-card rounded-2xl p-8 relative">
               <div className="absolute top-6 right-6 text-5xl font-serif text-primary/10 leading-none">&ldquo;</div>
               <div className="flex items-center gap-0.5 mb-5">

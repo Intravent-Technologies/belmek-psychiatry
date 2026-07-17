@@ -1,11 +1,19 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+let _supabase: SupabaseClient | null = null;
+
+function getSupabase() {
+  if (!_supabase) {
+    _supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+  }
+  return _supabase;
+}
 
 export async function getReviews() {
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from("reviews")
     .select("name, text")
@@ -16,6 +24,7 @@ export async function getReviews() {
 }
 
 export async function addReview(name: string, text: string) {
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from("reviews")
     .insert({ name, text })
