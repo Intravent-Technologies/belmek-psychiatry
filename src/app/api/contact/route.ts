@@ -15,7 +15,11 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const { firstName, lastName, dob, preference, street, city, state, zip, phone, email, insurance, emergencyContact, emergencyPhone } = body;
+    const {
+      firstName, lastName, dob, preference, street, city, state, zip,
+      phone, email, insurance, emergencyContact, emergencyPhone,
+      insuranceCardFront, insuranceCardBack,
+    } = body;
 
     if (!firstName || !lastName || !dob || !email) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -36,6 +40,22 @@ export async function POST(request: Request) {
       },
     });
 
+    const hasFront = typeof insuranceCardFront === "string" && insuranceCardFront.startsWith("data:image");
+    const hasBack = typeof insuranceCardBack === "string" && insuranceCardBack.startsWith("data:image");
+
+    let insuranceCardSection = "";
+    if (hasFront || hasBack) {
+      insuranceCardSection = `
+        <tr>
+          <td style="font-weight:bold;background:#f5f5f5;">Insurance Card</td>
+          <td>
+            ${hasFront ? `<p style="margin:0 0 8px 0;"><strong>Front:</strong><br/><img src="${insuranceCardFront}" style="max-width:100%;max-height:300px;border:1px solid #ddd;border-radius:8px;" /></p>` : ""}
+            ${hasBack ? `<p style="margin:0;"><strong>Back:</strong><br/><img src="${insuranceCardBack}" style="max-width:100%;max-height:300px;border:1px solid #ddd;border-radius:8px;" /></p>` : ""}
+          </td>
+        </tr>
+      `;
+    }
+
     const html = `
       <h2>New Appointment Request</h2>
       <table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse; width:100%; max-width:600px;">
@@ -46,6 +66,7 @@ export async function POST(request: Request) {
         <tr><td style="font-weight:bold;background:#f5f5f5;">Phone</td><td>${escapeHtml(phone) || "Not provided"}</td></tr>
         <tr><td style="font-weight:bold;background:#f5f5f5;">Email</td><td>${escapeHtml(email)}</td></tr>
         <tr><td style="font-weight:bold;background:#f5f5f5;">Insurance</td><td>${escapeHtml(insurance) || "Not specified"}</td></tr>
+        ${insuranceCardSection}
         <tr><td style="font-weight:bold;background:#f5f5f5;">Emergency Contact</td><td>${escapeHtml(emergencyContact) || "Not provided"} ${emergencyPhone ? `(${escapeHtml(emergencyPhone)})` : ""}</td></tr>
       </table>
     `;

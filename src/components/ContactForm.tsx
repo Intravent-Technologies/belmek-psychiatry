@@ -1,6 +1,77 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
+
+interface UploadZoneProps {
+  label: string;
+  sublabel: string;
+  base64: string | null;
+  onUpload: (base64: string) => void;
+  onRemove: () => void;
+}
+
+function UploadZone({ label, sublabel, base64, onUpload, onRemove }: UploadZoneProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const processFile = useCallback((file: File) => {
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") onUpload(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }, [onUpload]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+  }, [processFile]);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) processFile(file);
+  }, [processFile]);
+
+  if (base64) {
+    return (
+      <div className="relative rounded-xl border border-gray-200 bg-white p-3">
+        <img src={base64} alt={label} className="w-full h-48 object-contain rounded-lg" />
+        <button type="button" onClick={onRemove}
+          className="absolute top-5 right-5 w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center text-sm font-bold hover:bg-red-600 transition-all shadow-md">
+          &times;
+        </button>
+        <p className="text-xs text-gray-500 mt-2 text-center">{label}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={handleDrop}
+      onClick={() => inputRef.current?.click()}
+      className={`rounded-xl border-2 border-dashed cursor-pointer p-8 flex flex-col items-center justify-center text-center transition-all ${
+        dragging ? "border-primary bg-primary/5" : "border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-white"
+      }`}
+    >
+      <input ref={inputRef} type="file" accept="image/*" onChange={handleChange} className="hidden" />
+      <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mb-3">
+        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </div>
+      <p className="text-sm font-semibold text-gray-700">{label}</p>
+      <p className="text-xs text-gray-400 mt-1">{sublabel}</p>
+    </div>
+  );
+}
 
 export default function ContactForm() {
   const [step, setStep] = useState(1);
@@ -12,6 +83,8 @@ export default function ContactForm() {
     street: "", city: "", state: "", zip: "", phone: "", email: "",
     insurance: "", emergencyContact: "", emergencyPhone: "", agreed: false,
   });
+  const [insuranceCardFront, setInsuranceCardFront] = useState<string | null>(null);
+  const [insuranceCardBack, setInsuranceCardBack] = useState<string | null>(null);
 
   const [stepErrors, setStepErrors] = useState<string[]>([]);
 
@@ -48,10 +121,15 @@ export default function ContactForm() {
     setSending(true);
     setError("");
     try {
+      const payload = {
+        ...formData,
+        insuranceCardFront: insuranceCardFront || null,
+        insuranceCardBack: insuranceCardBack || null,
+      };
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("Failed to send");
       setSubmitted(true);
@@ -197,6 +275,25 @@ export default function ContactForm() {
                 <option value="humana">Humana</option>
                 <option value="other">Other</option>
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Insurance Card Photos</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <UploadZone
+                  label="Card Front"
+                  sublabel="Drag & drop or tap to upload"
+                  base64={insuranceCardFront}
+                  onUpload={setInsuranceCardFront}
+                  onRemove={() => setInsuranceCardFront(null)}
+                />
+                <UploadZone
+                  label="Card Back"
+                  sublabel="Drag & drop or tap to upload"
+                  base64={insuranceCardBack}
+                  onUpload={setInsuranceCardBack}
+                  onRemove={() => setInsuranceCardBack(null)}
+                />
+              </div>
             </div>
           </div>
         )}
