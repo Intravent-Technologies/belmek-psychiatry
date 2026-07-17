@@ -56,9 +56,12 @@ export default function ChatBot() {
       });
 
       const data = await res.json();
+      const reply = data.reply as string;
+      const thinkTime = Math.min(800 + reply.length * 8, 3000);
+      await new Promise((r) => setTimeout(r, thinkTime));
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.reply },
+        { role: "assistant", content: reply },
       ]);
     } catch {
       setMessages((prev) => [
