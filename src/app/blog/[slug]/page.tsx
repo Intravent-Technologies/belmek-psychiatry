@@ -45,7 +45,7 @@ const posts = [
       If anxiety is affecting your work, relationships, or quality of life, it's time to seek professional help. You don't have to struggle alone — effective treatments are available.
     `,
     date: "June 15, 2026",
-    author: "Dr. Jane Belmek",
+    author: "Dr. Ossai",
   },
   {
     slug: "benefits-of-telehealth-psychiatry",

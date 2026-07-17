@@ -15,7 +15,7 @@ const posts = [
     excerpt:
       "Anxiety is more than just feeling stressed or worried. Learn about the different types of anxiety disorders, common symptoms, and effective treatment approaches that can help you regain control.",
     date: "June 15, 2026",
-    author: "Dr. Jane Belmek",
+    author: "Dr. Ossai",
   },
   {
     slug: "benefits-of-telehealth-psychiatry",
@@ -39,7 +39,7 @@ const posts = [
     excerpt:
       "As the seasons change, so can your mood. Learn about Seasonal Affective Disorder (SAD) and discover practical strategies to maintain your mental health during the darker months.",
     date: "May 25, 2026",
-    author: "Dr. Jane Belmek",
+    author: "Dr. Ossai",
   },
   {
     slug: "what-to-expect-psychiatric-evaluation",
@@ -47,7 +47,7 @@ const posts = [
     excerpt:
       "If you've never had a psychiatric evaluation before, you might feel nervous. Here's a step-by-step guide to help you understand what happens during your first visit.",
     date: "May 18, 2026",
-    author: "Dr. Jane Belmek",
+    author: "Dr. Ossai",
   },
 ];
 
