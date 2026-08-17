@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
 import PreceptorshipForm from "@/components/PreceptorshipForm";
-import { AnimatedSection, StaggerContainer } from "@/components/Animations";
+import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/Animations";
 
 export const metadata: Metadata = {
   title: "Preceptorship | Belmek Psychiatry and Wellness",
