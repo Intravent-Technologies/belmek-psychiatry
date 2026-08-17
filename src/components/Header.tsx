@@ -56,6 +56,12 @@ export default function Header() {
             (443) 339-8634
           </a>
           <Link
+            href="/preceptorship"
+            className="border border-primary text-primary px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary/5 transition-all"
+          >
+            Preceptorship
+          </Link>
+          <Link
             href="/contact"
             className="gold-primary text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-lg shadow-[#ab7b3b]/30"
           >
@@ -100,6 +106,13 @@ export default function Header() {
               <a href="tel:+14433398634" className="block px-4 py-3 text-sm text-gray-500 font-medium">
                 (443) 339-8634
               </a>
+              <Link
+                href="/preceptorship"
+                onClick={() => setMobileOpen(false)}
+                className="block text-center border border-primary text-primary px-5 py-3 rounded-xl text-sm font-semibold"
+              >
+                Preceptorship
+              </Link>
               <Link
                 href="/contact"
                 onClick={() => setMobileOpen(false)}
