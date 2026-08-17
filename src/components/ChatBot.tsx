@@ -11,7 +11,7 @@ interface Message {
 const GREETING: Message = {
   role: "assistant",
   content:
-    "Hey there! Welcome to Belmek Psychiatry. I'm here to help with any questions you might have — about our services, insurance, or just mental health in general. So tell me — what's your name?",
+    "Hey, welcome to Belmek. I'm really glad you're here. Before we get started — what's your name? I like to make our conversations personal.",
   typed: true,
 };
 
@@ -113,7 +113,7 @@ export default function ChatBot() {
 
       const data = await res.json();
       const reply = data.reply as string;
-      const thinkTime = Math.min(600 + reply.length * 5, 2500);
+      const thinkTime = Math.min(400 + reply.length * 4, 2000);
       await new Promise((r) => setTimeout(r, thinkTime));
 
       setMessages((prev) => [
@@ -171,7 +171,7 @@ export default function ChatBot() {
               </div>
               <div>
                 <h3 className="text-white font-semibold text-sm">Belmek Assistant</h3>
-                <p className="text-white/70 text-xs">Ask about our services</p>
+                <p className="text-white/70 text-xs">We're here to help</p>
               </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="text-white/70 hover:text-white transition-colors p-1" aria-label="Close chat">
